@@ -7,23 +7,16 @@ namespace ConsoleApp2
     class Program
     {
         static void Main(string[] args)
-        {
-            string key;
-            using (var generator = RandomNumberGenerator.Create())
-            {
-                var salt = new byte[16];
-                generator.GetBytes(salt);
-                key = String.Concat<byte>(salt);
-
-            }
+        {   
             if (args.Length % 2 == 0 || args.Length < 3)
             {
                 Console.WriteLine("Please enter an odd number of arguments");
                 Environment.Exit(0);
             }
+            string SecretKey = CreateKey();
             Random r = new Random();
             int g = r.Next(0, args.Length - 1);
-            Console.WriteLine($"HMAC: {HMACHASH(args[g], key)}");
+            Console.WriteLine($"HMAC: {HMACHASH(args[g],SecretKey)}");
             int userChoice;
             Console.WriteLine("Available moves:");
             for (int i = 0; i < args.Length; i++)
@@ -48,7 +41,7 @@ namespace ConsoleApp2
             {
                 Console.WriteLine("You lose!");
             }
-            Console.WriteLine($"HMAC key: {HMACHASH(key,"")}");
+            Console.WriteLine($"HMAC key: {SecretKey}");
         }
         static string[] Middle(string[] arr, int index)
         {
@@ -81,5 +74,17 @@ namespace ConsoleApp2
                 return BitConverter.ToString(bhash).Replace("-", string.Empty);
             }
         }
+
+        public static string CreateKey()
+        {
+            using (var random = RandomNumberGenerator.Create())
+            {
+                var key = new byte[16];
+                random.GetBytes(key);
+                string value = String.Concat<byte>(key);
+                return value;
+            }
+        }
+
     }
 }
